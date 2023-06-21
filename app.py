@@ -119,10 +119,10 @@ def page3():
         conn.commit()
         end = time.time()
         total_time.append(end-start)
-
+        total_min=int(min)+int(inc)
+        total_max = int(max) + int(inc)
         query2 = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE State=? AND Population BETWEEN ? AND ?"
-        cursor.execute(query2, state, int(min+inc), int(max+inc))
-
+        cursor.execute(query2, state, total_min, total_max)
 
         rows = cursor.fetchall()
         for i in rows:
