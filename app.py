@@ -89,6 +89,39 @@ def page2():
 
     return render_template("2)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
 
+
+@app.route("/page3/", methods=['GET', 'POST'])
+def page3():
+    instance_time = []
+    instance = []
+    total_time = []
+    salpics = []
+    count=0
+
+    if request.method == "POST":
+        state = request.form['state']
+        min = request.form['min']
+        max = request.form['max']
+        inc = request.form['inc']
+
+        query = "UPDATE dbo.city1 SET Population=Population+? WHERE State=? AND Population BETWEEN ? AND ?"
+        start = time.time()
+        cursor.execute(query, inc, state, min, max)
+        conn.commit()
+        end = time.time()
+        total_time.append(end-start)
+
+        query2 = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE State=? AND Population BETWEEN ? AND ?"
+        cursor.execute(query2, state, int(min+inc), int(max+inc))
+    
+
+        rows = cursor.fetchall()
+        for i in rows:
+            count+=1
+            salpics.append(i)
+
+    return render_template("3)Page.html", total_time=total_time, instance_time=instance_time, count=count, salpics=salpics)
+
 '''
 @app.route("/page3/", methods=['GET', 'POST'])
 def page3():
@@ -106,10 +139,10 @@ def page3():
         for i in range(num):
             instance.append(i + 1)
 
-        query = "SELECT City, State, Rank, Population FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
+        query = "UPDATE dbo.city1 SET Population=? WHERE State=? AND Population BETWEEN ? AND ?"
         for i in instance:
             start = time.time()
-            cursor.execute(query, min, max)
+            cursor.execute(query, inc, state, min, max)
             end = time.time()
             instance_time.append(end-start)
 
