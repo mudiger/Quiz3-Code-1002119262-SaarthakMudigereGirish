@@ -44,7 +44,7 @@ def page1():
         min = request.form['min']
         max = request.form['max']
 
-        query = "SELECT City, State, Rank, Population FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
+        query = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE Population BETWEEN ? AND ?"
         start = time.time()
         cursor.execute(query, min, max)
         end = time.time()
@@ -69,10 +69,10 @@ def page2():
         min = request.form['min']
         max = request.form['max']
 
-        for i in range(num):
+        for i in range(int(num)):
             instance.append(i + 1)
 
-        query = "SELECT City, State, Rank, Population FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
+        query = "SELECT City, State, Population, lat, lon  FROM dbo.city1 WHERE Population BETWEEN ? AND ? ORDER BY RAND()"
         s = time.time()
         for i in instance:
             start = time.time()
@@ -89,7 +89,7 @@ def page2():
 
     return render_template("2)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
 
-
+'''
 @app.route("/page3/", methods=['GET', 'POST'])
 def page3():
     instance_time = []
@@ -127,6 +127,77 @@ def page3():
 
     return render_template("3)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
 
+
+@app.route("/page4a/", methods=['GET', 'POST'])
+def page4a():
+    total_time = []
+    salpics = []
+    if request.method == "POST":
+        min = request.form['min']
+        max = request.form['max']
+
+        query = "DELETE FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
+        start = time.time()
+        cursor.execute(query, min, max)
+        #conn.commit()
+        end = time.time()
+        diff = end - start
+        total_time.append(diff)
+
+        row = cursor.fetchall()
+        for i in row:
+            salpics.append(i)
+
+    return render_template("4a)Page.html", salpics=salpics, total_time=total_time)
+
+
+@app.route("/page4b/", methods=['GET', 'POST'])
+def page4b():
+    total_time = []
+    salpics = []
+    if request.method == "POST":
+        min = request.form['min']
+        max = request.form['max']
+        col = request.form['col']
+
+        query = "UPDATE dbo.all_month SET ? WHERE Rank BETWEEN ? AND ?"
+        start = time.time()
+        cursor.execute(query, col, min, max)
+        #conn.commit()
+        end = time.time()
+        diff = end - start
+        total_time.append(diff)
+
+        row = cursor.fetchall()
+        for i in row:
+            salpics.append(i)
+
+    return render_template("4b)Page.html", salpics=salpics, total_time=total_time)
+
+
+@app.route("/page4b/", methods=['GET', 'POST'])
+def page4b():
+    total_time = []
+    salpics = []
+    if request.method == "POST":
+        min = request.form['min']
+        max = request.form['max']
+        col = request.form['col']
+
+        query = "INSERT INTO dbo.all_month VALUES (?,?,?,?)"
+        start = time.time()
+        cursor.execute(query, col, min, max)
+        #conn.commit()
+        end = time.time()
+        diff = end - start
+        total_time.append(diff)
+
+        row = cursor.fetchall()
+        for i in row:
+            salpics.append(i)
+
+    return render_template("4b)Page.html", salpics=salpics, total_time=total_time)
+'''
 
 if __name__ == "__main__":
     app.run(debug=True)
