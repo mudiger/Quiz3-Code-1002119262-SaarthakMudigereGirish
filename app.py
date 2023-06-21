@@ -81,7 +81,7 @@ def page2():
         for i in range(int(num)):
             instance.append(i + 1)
 
-        query = "SELECT City, State, Population, lat, lon  FROM dbo.city1 WHERE Population BETWEEN ? AND ? ORDER BY NEWID()"
+        query = "SELECT City, State, Population, lat, lon  FROM dbo.city1 WHERE Population BETWEEN ? AND ? ORDER BY NEWID() "
         s = time.time()
         for i in instance:
             start = time.time()
@@ -131,27 +131,25 @@ def page3():
 
     return render_template("3)Page.html", total_time=total_time, instance_time=instance_time, count=count, salpics=salpics)
 
-'''
-@app.route("/page3/", methods=['GET', 'POST'])
-def page3():
+
+@app.route("/page4a/", methods=['GET', 'POST'])
+def page4a():
     instance_time = []
     instance = []
-    total_time = []
     salpics = []
     redis_time = []
 
     if request.method == "POST":
-        num = request.form['num']
         min = request.form['min']
         max = request.form['max']
 
-        for i in range(num):
+        for i in range(30):
             instance.append(i + 1)
 
-        query = "UPDATE dbo.city1 SET Population=? WHERE State=? AND Population BETWEEN ? AND ?"
+        query = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE Population BETWEEN ? AND ?"
         for i in instance:
             start = time.time()
-            cursor.execute(query, inc, state, min, max)
+            cursor.execute(query, min, max)
             end = time.time()
             instance_time.append(end-start)
 
@@ -167,7 +165,8 @@ def page3():
             e = time.time()
             redis_time.append(e - s)
 
-    return render_template("3)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
+    return render_template("4a)Page.html", redis_time=redis_time, instance_time=instance_time, instance=instance)
+'''
 
 
 @app.route("/page4a/", methods=['GET', 'POST'])
