@@ -81,7 +81,7 @@ def page2():
         for i in range(int(num)):
             instance.append(i + 1)
 
-        query = "SELECT City, State, Population, lat, lon  FROM dbo.city1 WHERE Population BETWEEN ? AND ? ORDER BY RAND()"
+        query = "SELECT City, State, Population, lat, lon  FROM dbo.city1 WHERE Population BETWEEN ? AND ? ORDER BY NEWID()"
         s = time.time()
         for i in instance:
             start = time.time()
