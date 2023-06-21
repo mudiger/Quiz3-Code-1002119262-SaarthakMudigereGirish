@@ -29,7 +29,7 @@ redis_password = 'My2SymFLIM78MdHnE61sCcWkM6G0HGWd6AzCaKwIZUU='
 
 # Redis client
 redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password)
-redis_client.flushall()
+# redis_client.flushall()
 
 @app.route("/")
 def index():
@@ -87,37 +87,45 @@ def page2():
         e = time.time()
         total_time.append(e - s)
 
-    return render_template("2)Page.html", total_time=total_time, instance_time=instance_time, salpics=salpics)
+    return render_template("2)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
 
 
 @app.route("/page3/", methods=['GET', 'POST'])
 def page3():
-    time_query = []
-    query_time = []
+    instance_time = []
+    instance = []
+    total_time = []
+    salpics = []
     redis_time = []
 
-    for i in range(30):
-        time_query.append(i + 1)
+    if request.method == "POST":
+        num = request.form['num']
+        min = request.form['min']
+        max = request.form['max']
 
-    query = "SELECT id FROM dbo.all_month TABLESAMPLE(1000 ROWS)"
-    for i in time_query:
-        start = time.time()
-        cursor.execute(query)
-        end = time.time()
-        query_time.append(end-start)
+        for i in range(num):
+            instance.append(i + 1)
 
-        rows = cursor.fetchall()
-        temp_result = ""
-        for j in rows:
-            temp_result = temp_result + str(j)
+        query = "SELECT City, State, Rank, Population FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
+        for i in instance:
+            start = time.time()
+            cursor.execute(query, min, max)
+            end = time.time()
+            instance_time.append(end-start)
 
-        redis_client.set(i, temp_result)
-        s = time.time()
-        temp = redis_client.get(i)
-        e = time.time()
-        redis_time.append(e - s)
+            rows = cursor.fetchall()
+            temp_result = ""
+            for j in rows:
+                temp_result = temp_result + str(j)
+                salpics.append(i)
 
-    return render_template("3)Page.html", query_time=query_time, time_query=time_query, redis_time=redis_time)
+            redis_client.set(i, temp_result)
+            s = time.time()
+            temp = redis_client.get(i)
+            e = time.time()
+            redis_time.append(e - s)
+
+    return render_template("3)Page.html", total_time=total_time, instance_time=instance_time, instance=instance, salpics=salpics)
 
 
 if __name__ == "__main__":
