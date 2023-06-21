@@ -39,23 +39,32 @@ def index():
 @app.route("/page1/", methods=['GET', 'POST'])
 def page1():
     total_time = []
+    instance_time = []
     salpics = []
+    instance = []
     if request.method == "POST":
         min = request.form['min']
         max = request.form['max']
 
+        for i in range(30):
+            instance.append(i + 1)
+
         query = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE Population BETWEEN ? AND ?"
-        start = time.time()
-        cursor.execute(query, min, max)
-        end = time.time()
-        diff = end - start
-        total_time.append(diff)
+        s =time.time()
+        for i in instance:
+            start = time.time()
+            cursor.execute(query, min, max)
+            end = time.time()
+            diff = end - start
+            instance_time.append(diff)
 
-        row = cursor.fetchall()
-        for i in row:
-            salpics.append(i)
+            row = cursor.fetchall()
+            for i in row:
+                salpics.append(i)
+        e=time.time()
+        total_time.append((e-s))
 
-    return render_template("1)Page.html", salpics=salpics, total_time=total_time)
+    return render_template("1)Page.html", salpics=salpics, total_time=total_time, instance_time=instance_time, instance=instance)
 
 
 @app.route("/page2/", methods=['GET', 'POST'])
@@ -113,7 +122,7 @@ def page3():
 
         query2 = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE State=? AND Population BETWEEN ? AND ?"
         cursor.execute(query2, state, int(min+inc), int(max+inc))
-    
+
 
         rows = cursor.fetchall()
         for i in rows:
