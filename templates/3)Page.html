@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Page3</title>
+{% endblock %}
+
+{% block body %}
+<!--    <div style="width: 85%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">-->
+<!--        <h2 style="text-align: center;color:rgb(99, 99, 99);">1000 random tuples</h2>-->
+<!--    </div>-->
+
+    <div style="height: 50vh; width: 80%; display: flex; align-items: center; justify-content: center;">
+        <label style="color:rgb(99, 99, 99);">Seconds  </label>
+		<canvas id="myChart"></canvas>
+	</div>
+
+    <script>
+		const labels = {{ time_query | tojson}}.map(label => 'Trial ' + label);
+
+		const data = {
+			labels: labels,
+			datasets: [{
+				label: 'Database',
+				backgroundColor: 'rgb(255, 99, 132)',
+				borderColor: 'rgb(255, 99, 132)',
+				data: {{ query_time | tojson}},
+			}, {
+              label: 'Redis Cache',
+              backgroundColor: 'rgb(54, 162, 235)',
+              borderColor: 'rgb(54, 162, 235)',
+              data: {{ redis_time | tojson }},
+            }]
+		};
+
+		const config = {
+			type: 'line',
+			data: data,
+			options: { maintainAspectRatio: false}
+
+		};
+
+		const myChart = new Chart(
+			document.getElementById('myChart'),
+			config
+		);
+
+	</script>
+
+{% endblock %}
