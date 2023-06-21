@@ -29,12 +29,12 @@
 		const data = {
 			labels: labels,
 			datasets: [{
-				label: 'Database',
+				label: 'Redis Cache',
 				backgroundColor: 'rgb(255, 99, 132)',
 				borderColor: 'rgb(255, 99, 132)',
 				data: {{ instance_time | tojson}},
 			}, {
-              label: 'Redis Cache',
+              label: 'Database',
               backgroundColor: 'rgb(54, 162, 235)',
               borderColor: 'rgb(54, 162, 235)',
               data: {{ redis_time | tojson }},

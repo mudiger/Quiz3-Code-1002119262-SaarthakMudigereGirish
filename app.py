@@ -166,79 +166,44 @@ def page4a():
             redis_time.append(e - s)
 
     return render_template("4a)Page.html", redis_time=redis_time, instance_time=instance_time, instance=instance)
-'''
-
-
-@app.route("/page4a/", methods=['GET', 'POST'])
-def page4a():
-    total_time = []
-    salpics = []
-    if request.method == "POST":
-        min = request.form['min']
-        max = request.form['max']
-
-        query = "DELETE FROM dbo.all_month WHERE Rank BETWEEN ? AND ?"
-        start = time.time()
-        cursor.execute(query, min, max)
-        #conn.commit()
-        end = time.time()
-        diff = end - start
-        total_time.append(diff)
-
-        row = cursor.fetchall()
-        for i in row:
-            salpics.append(i)
-
-    return render_template("4a)Page.html", salpics=salpics, total_time=total_time)
 
 
 @app.route("/page4b/", methods=['GET', 'POST'])
 def page4b():
-    total_time = []
+    instance_time = []
+    instance = []
     salpics = []
+    redis_time = []
+
     if request.method == "POST":
+        num = request.form['num']
         min = request.form['min']
         max = request.form['max']
-        col = request.form['col']
 
-        query = "UPDATE dbo.all_month SET ? WHERE Rank BETWEEN ? AND ?"
-        start = time.time()
-        cursor.execute(query, col, min, max)
-        #conn.commit()
-        end = time.time()
-        diff = end - start
-        total_time.append(diff)
+        for i in range(int(num)):
+            instance.append(i + 1)
 
-        row = cursor.fetchall()
-        for i in row:
-            salpics.append(i)
+        query = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE Population BETWEEN ? AND ?"
+        for i in instance:
+            start = time.time()
+            cursor.execute(query, min, max)
+            end = time.time()
+            instance_time.append(end-start)
 
-    return render_template("4b)Page.html", salpics=salpics, total_time=total_time)
+            rows = cursor.fetchall()
+            temp_result = ""
+            for j in rows:
+                temp_result = temp_result + str(j)
+                salpics.append(i)
 
+            redis_client.set(i, temp_result)
+            s = time.time()
+            temp = redis_client.get(i)
+            e = time.time()
+            redis_time.append(e - s)
 
-@app.route("/page4b/", methods=['GET', 'POST'])
-def page4b():
-    total_time = []
-    salpics = []
-    if request.method == "POST":
-        min = request.form['min']
-        max = request.form['max']
-        col = request.form['col']
+    return render_template("4b)Page.html", redis_time=redis_time, instance_time=instance_time, instance=instance)
 
-        query = "INSERT INTO dbo.all_month VALUES (?,?,?,?)"
-        start = time.time()
-        cursor.execute(query, col, min, max)
-        #conn.commit()
-        end = time.time()
-        diff = end - start
-        total_time.append(diff)
-
-        row = cursor.fetchall()
-        for i in row:
-            salpics.append(i)
-
-    return render_template("4b)Page.html", salpics=salpics, total_time=total_time)
-'''
 
 if __name__ == "__main__":
     app.run(debug=True)
