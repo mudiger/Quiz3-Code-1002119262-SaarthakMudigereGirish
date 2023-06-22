@@ -141,6 +141,7 @@ def page4a():
     instance = []
     salpics = []
     redis_time = []
+    total_time=[]
 
     if request.method == "POST":
         minlat = request.form['minlat']
@@ -152,7 +153,7 @@ def page4a():
             instance.append(i + 1)
 
         query = "SELECT City, State, Population, lat, lon FROM dbo.city1 WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?"
-
+        m=time.time()
         for i in instance:
             start = time.time()
             cursor.execute(query, minlat, maxlat, minlong, maxlong)
@@ -170,8 +171,9 @@ def page4a():
             temp = redis_client.get(i)
             e = time.time()
             redis_time.append(e - s)
-
-    return render_template("4a)Page.html", redis_time=redis_time, instance_time=instance_time, instance=instance)
+        n=time.time()
+        total_time.append(n-m)
+    return render_template("4a)Page.html", redis_time=redis_time, instance_time=instance_time, instance=instance, salpics=salpics, total_time=total_time)
 
 '''
 @app.route("/page4b/", methods=['GET', 'POST'])
